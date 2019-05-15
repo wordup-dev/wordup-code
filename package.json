@@ -4,7 +4,7 @@
 	"description": "",
 	"version": "0.1.0",
 	"enableProposedApi": false,
-	"preview":true,
+	"preview": true,
 	"license": "SEE LICENSE IN LICENSE.md",
 	"icon": "resources/wordup_logo.png",
 	"galleryBanner": {

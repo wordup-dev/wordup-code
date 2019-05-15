@@ -5,7 +5,7 @@ The Wordup extension makes it easy to develop, manage and export WordPress plugi
 
 ## Key Features
 
-* Manage all your local WordPress projects directly in Visual Studio Code
+* Manage all your local WordPress projects directly in VSCode 
 * Set up a new docker based development environment for your WordPress plugins/themes within minutes.
 * Automatically install all necessary plugins and themes for WordPress. Even from local or remote zip-files.
 * Export your plugin or theme to a zip-file. Or even export your whole project.
