@@ -6,7 +6,7 @@
 	"enableProposedApi": false,
 	"preview": true,
 	"license": "SEE LICENSE IN LICENSE.md",
-	"icon": "resources/wordup_logo.png",
+	"icon": "resources/logo_wordup.png",
 	"galleryBanner": {
 		"color": "#8b35f4",
 		"theme": "dark"
