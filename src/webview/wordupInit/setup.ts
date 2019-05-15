@@ -1,0 +1,153 @@
+
+import * as vscode from 'vscode';
+import * as fs from 'fs';
+import * as path from 'path';
+import * as cp from 'child_process';
+import { getOutputChannel } from '../../wordupCli';
+const slugify = require('slugify');
+
+
+interface ProjectInitFields {
+	name: string; 
+	path:string;
+	type:string;
+	title:string;
+	admin:string;
+    password:string;
+    email:string;
+    plugins:object;
+}
+
+
+export class WordupInitWebView {
+    public panel:vscode.WebviewPanel;
+	private readonly _extensionPath: string;
+
+    constructor(context: vscode.ExtensionContext){
+        this._extensionPath = context.extensionPath;
+
+        this.panel = vscode.window.createWebviewPanel(
+            'wordupInit', // Identifies the type of the webview. Used internally
+            'New wordup project', // Title of the panel displayed to the user
+            vscode.ViewColumn.One, // Editor column to show the new webview panel in.
+            {
+                enableScripts: true
+            } // Webview options. More on these later.
+        );
+
+        this.getWebviewContent();
+
+        this.panel.webview.onDidReceiveMessage(
+            message => {
+              switch (message.command) {
+                case 'submitForm':
+                  this.actionSubmitForm(message.value);
+                  return;
+                case 'selectFolder':
+                  this.actionSelectFolder();
+                  return;
+              }
+            },
+            undefined,
+            context.subscriptions
+        );
+
+    }
+
+    actionSubmitForm(fields:ProjectInitFields){
+
+        if (!fs.existsSync(fields.path)) {
+			vscode.window.showErrorMessage('The selected path does not exist.');
+            return;
+		}
+
+        vscode.window.withProgress({
+            location: vscode.ProgressLocation.Notification,
+            title: "Create new wordup project",
+            cancellable: true
+        }, (progress, token) => {
+
+            progress.report({ increment: 5 });
+
+            setTimeout(() => progress.report({ increment: 15 }), 1000);
+            setTimeout(() => progress.report({ increment: 15 }), 2000);
+            setTimeout(() => progress.report({ increment: 15 }), 4000);
+            setTimeout(() => progress.report({ increment: 10 }), 8000);
+            setTimeout(() => progress.report({ increment: 5, message: " 💤" }), 16000);
+
+            return new Promise(resolve => {
+                getOutputChannel().clear();
+			    getOutputChannel().show(true);
+
+                let env = Object.create( process.env );
+                env.WORDUP_INIT_PATH = fields.path;
+                env.WORDUP_INIT_NAME = fields.name;
+                env.WORDUP_INIT_TYPE = fields.type;
+
+                const wpInstall = {
+                    values: {
+                        title: fields.title,
+                        adminUser:fields.admin, 
+                        adminPassword:fields.password, 
+                        adminEmail:fields.email,
+                        plugins:fields.plugins || {},
+                        themes:{}
+                    }
+                };
+
+                env.WORDUP_INIT_WP_INSTALL = Buffer.from(JSON.stringify(wpInstall)).toString('base64');
+
+                let cpCall = cp.exec('wordup init', {cwd:this._extensionPath, env:env});
+                
+                token.onCancellationRequested(() => {
+                    cpCall.kill();
+                });
+
+                cpCall.stdout.on('data', (data:any) => {
+                    getOutputChannel().append(data);
+                });
+
+                cpCall.stderr.on('data', (data:any) => {
+                    getOutputChannel().append(data);
+                });
+
+                cpCall.on('close', (code:number) => {
+                    if(code !== 0){
+                        vscode.window.showErrorMessage("Oops, something didn't work. Please take a look at the output window for more details.");
+                    }else {
+                        this.panel.dispose();
+                        vscode.window.showInformationMessage('Successfully installed new wordup project',...['Open in new window']).then(selection => {
+                            if(selection === 'Open in new window'){
+                                const projectPath = path.join( fields.path , slugify(fields.name, {lower: true}));
+                                vscode.commands.executeCommand('vscode.openFolder', vscode.Uri.file(projectPath), true);
+                            }
+                        });
+                        vscode.commands.executeCommand('wordupProjectView.refreshEntry');
+                    }
+                    resolve();
+                });
+            });
+        });
+
+    }
+
+    actionSelectFolder(){
+        vscode.window.showOpenDialog({canSelectFiles:false, canSelectFolders:true, canSelectMany:false}).then(fileUri => {
+            if (fileUri && fileUri[0]) {
+                this.panel.webview.postMessage({ command: 'selectedFolder', value: fileUri[0].fsPath  });
+            }
+        });
+
+    }
+
+    getWebviewContent() {
+        const htmlPathOnDisk = vscode.Uri.file(
+			path.join(this._extensionPath, 'src','webview','wordupInit', 'index.html')
+		);
+
+        fs.readFile(htmlPathOnDisk.path, 'utf8',(err, contents) => {
+            this.panel.webview.html = contents;
+        });
+    }
+
+}

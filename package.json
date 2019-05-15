@@ -1,0 +1,214 @@
+{
+	"name": "wordup-code",
+	"displayName": "Wordup",
+	"description": "",
+	"version": "0.1.0",
+	"enableProposedApi": false,
+	"preview":true,
+	"license": "SEE LICENSE IN LICENSE.md",
+	"icon": "resources/wordup_logo.png",
+	"galleryBanner": {
+		"color": "#8b35f4",
+		"theme": "dark"
+	},
+	"engines": {
+		"vscode": "^1.33.0"
+	},
+	"categories": [
+		"Snippets",
+		"Other",
+		"Debuggers"
+	],
+	"bugs": {
+		"url": "https://github.com/wordup-dev/wordup-code/issues"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/wordup-dev/wordup-code.git"
+	},
+	"homepage": "https://wordup.dev",
+	"keywords": [
+		"wordpress",
+		"php",
+		"docker",
+		"compose"
+	],
+	"activationEvents": [
+		"*",
+		"onView:wordupProjectView",
+		"onCommand:extension.helloWorld",
+		"onCommand:wordup.openInBrowser",
+		"onCommand:wordup.startDevServer",
+		"onCommand:wordupProjectView.addEntry",
+		"onCommand:workbench.action.tasks.runTask"
+	],
+	"main": "./out/extension.js",
+	"contributes": {
+		"viewsContainers": {
+			"activitybar": [
+				{
+					"id": "wordup-explorer",
+					"title": "Wordup",
+					"icon": "resources/logo.svg"
+				}
+			]
+		},
+		"views": {
+			"wordup-explorer": [
+				{
+					"id": "wordupProjectView",
+					"name": "Project explorer"
+				}
+			]
+		},
+		"commands": [
+			{
+				"command": "wordupProjectView.addEntry",
+				"title": "Create new wordup project",
+				"category": "Wordup"
+			},
+			{
+				"command": "wordupProjectView.refreshEntry",
+				"title": "Refresh projects",
+				"category": "Wordup",
+				"icon": {
+					"light": "resources/light/refresh.svg",
+					"dark": "resources/dark/refresh.svg"
+				}
+			},
+			{
+				"command": "wordupProjectView.editEntry",
+				"title": "Edit project",
+				"category": "Wordup",
+				"icon": {
+					"light": "resources/light/edit.svg",
+					"dark": "resources/dark/edit.svg"
+				}
+			},
+			{
+				"command": "wordup.installDevServer",
+				"title": "Install project dev server",
+				"category": "Wordup",
+				"icon": {
+					"light": "resources/light/install.svg",
+					"dark": "resources/dark/install.svg"
+				}
+			},
+			{
+				"command": "wordup.startDevServer",
+				"title": "Start project dev server",
+				"category": "Wordup",
+				"icon": {
+					"light": "resources/light/play.svg",
+					"dark": "resources/dark/play.svg"
+				}
+			},
+			{
+				"command": "wordup.stopDevServer",
+				"title": "Stop project dev server",
+				"category": "Wordup",
+				"icon": {
+					"light": "resources/light/stop.svg",
+					"dark": "resources/dark/stop.svg"
+				}
+			},
+			{
+				"command": "wordup.openInBrowser",
+				"title": "Open in Browser",
+				"category": "Wordup",
+				"icon": {
+					"light": "resources/light/link-external.svg",
+					"dark": "resources/dark/link-external.svg"
+				}
+			},
+			{
+				"command": "wordup.deleteDevServer",
+				"title": "Delete project dev server",
+				"category": "Wordup"
+			}
+		],
+		"menus": {
+			"commandPalette": [
+				{
+					"command": "wordupProjectView.editEntry",
+					"when": "0 == 1"
+				}
+			],
+			"view/title": [
+				{
+					"command": "wordupProjectView.refreshEntry",
+					"when": "view == wordupProjectView",
+					"group": "navigation"
+				},
+				{
+					"command": "wordupProjectView.addEntry",
+					"when": "view == wordupProjectView"
+				}
+			],
+			"view/item/context": [
+				{
+					"command": "wordup.installDevServer",
+					"when": "view == wordupProjectView && viewItem == projectStopped",
+					"group": "inline"
+				},
+				{
+					"command": "wordupProjectView.editEntry",
+					"when": "view == wordupProjectView && viewItem == project",
+					"group": "inline"
+				},
+				{
+					"command": "wordup.deleteDevServer",
+					"when": "view == wordupProjectView && viewItem == projectPaused"
+				},
+				{
+					"command": "wordup.openInBrowser",
+					"when": "view == wordupProjectView && viewItem == projectRunning",
+					"group": "inline"
+				},
+				{
+					"command": "wordup.stopDevServer",
+					"when": "view == wordupProjectView && viewItem == projectRunning",
+					"group": "inline"
+				},
+				{
+					"command": "wordup.startDevServer",
+					"when": "view == wordupProjectView && viewItem == projectPaused",
+					"group": "inline"
+				}
+			]
+		},
+		"taskDefinitions": [
+			{
+				"type": "wordup",
+				"required": [
+					"task"
+				],
+				"properties": {
+					"task": {
+						"type": "string",
+						"description": "The wordup-cli task to customize"
+					}
+				}
+			}
+		]
+	},
+	"scripts": {
+		"vscode:prepublish": "npm run compile",
+		"compile": "tsc -p ./",
+		"watch": "tsc -watch -p ./",
+		"postinstall": "node ./node_modules/vscode/bin/install",
+		"test": "npm run compile && node ./node_modules/vscode/bin/test"
+	},
+	"devDependencies": {
+		"@types/mocha": "^2.2.42",
+		"@types/node": "^10.14.6",
+		"tslint": "^5.16.0",
+		"typescript": "^3.4.5",
+		"vscode": "^1.1.34"
+	},
+	"dependencies": {
+		"shelljs": "^0.8.3",
+		"wordup-cli": "^0.2.3",
+		"slugify": "^1.3.4"
+	}
+}

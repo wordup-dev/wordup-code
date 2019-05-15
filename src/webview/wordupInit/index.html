@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Wordup</title>
+        <style>
+
+            body {
+                padding:0 2rem 2rem 2rem;
+            }
+
+            h1 {
+                font-weight:300;
+            }
+
+            label {
+                font-weight:bold;
+                margin-bottom:0.5rem;
+                display:block;
+            }
+
+            .field {
+                margin-bottom:1rem;
+                width:300px;
+            }
+
+            .flex {
+                display: flex;
+            }
+
+            input {
+                background:var(--vscode-settings-textInputBackground);
+                color:var(--vscode-settings-textInputForeground);
+                padding:0.3rem;
+                border:1px solid var(--vscode-settings-textInputBorder, transparent);
+                outline:none;
+                box-sizing: border-box;
+            }
+
+            input:active, input:focus, select:active, select:focus {
+                border:1px solid var(--vscode-focusBorder);
+                outline:none;
+            }
+
+            input[type='checkbox'] {
+                background:var(--vscode-settings-checkboxBackground);
+                border:1px solid var(--vscode-settings-checkboxBorder);
+            }
+
+            select {
+                color:var(--vscode-settings-textInputForeground);
+                background:var(--vscode-settings-dropdownBackground);
+                border:1px solid var(--vscode-settings-dropdownBorder);
+                padding:0.5rem;
+                box-sizing: border-box;
+                height:calc(1.5em + .75rem);
+                width:50%;
+            }
+            input[type='text'], input[type='email']{
+                width:100%;
+            }
+
+            .subfield{
+                width:145px;
+            }
+
+            .subfield + .subfield {
+                margin-left:10px;
+            }
+
+            button {
+                background:var(--vscode-button-background);
+                color:var(--vscode-button-foreground);
+                padding:0.3rem 0.6rem;
+                border:1px solid var(--vscode-button-background);
+            }
+
+            button:hover {
+                background:var(--vscode-button-hoverBackground);
+            }
+
+            button[type='submit']{
+                padding:0.6rem 0.6rem;
+            }
+
+            ul.plugins {
+                list-style:none;
+                margin:0;
+                padding:0;
+            }
+
+            ul.plugins label {
+               font-weight:normal;
+            }
+
+        
+        </style>
+    </head>
+    <body>
+        <h1>New wordup project</h1>
+        <p>Setup a new project to develop a WordPress plugin or theme.</p>
+        <form id="initProjectForm">
+            <div class="field">
+                <label>Name:</label>
+                <input type="text" name="name" id="projectName"  placeholder="A name for your new project" required />
+            </div>
+            <div class="field">
+                <label>Path:</label>
+                <div class="flex">
+                    <input type="text" name="path" id="projectPath" placeholder="Where we create your project folder" required style="width:200px;" /> 
+                    <button type="button" id="selectFolder" style="flex-grow: 1;">Select Folder</button>
+                </div>           
+            </div>
+            <div class="field">
+                <label>What kind of WordPress project:</label>
+                <select name="type">
+                    <option value="plugins">Plugin</option>
+                    <option value="themes">Theme</option>
+                </select>
+            </div>
+            <h3 style="margin-top:2rem;">WordPress Installation:</h3>
+            <div class="field">
+                <label>Title:</label>
+                <input type="text" name="title" placeholder="The title of your WordPress installation" required />
+            </div>
+            <div class="field flex">
+                <div class="subfield">
+                    <label>Admin:</label>
+                    <input type="text" name="admin" value="admin" placeholder="WordPress admin user" required />
+                </div>
+                <div class="subfield">
+                    <label>Password:</label>
+                    <input type="text" name="password" value="123456" placeholder="WordPress admin user password" required />
+                </div>
+            </div>
+            <div class="field">
+                <label>E-Mail:</label>
+                <input type="email" name="email" placeholder="WordPress admin E-Mail address" required />
+            </div>
+            <p style="font-weight:bold;">Automatically install useful WordPress plugins:</p>
+            <div class="field">
+                <ul class="plugins">
+                    <li>
+                        <label><input type="checkbox" name="plugins" value="contact-form-7" data-release="latest"   /> Contact Form 7 (<a href="https://de.wordpress.org/plugins/contact-form-7/">Plugin page</a>)</label>
+                    </li>
+                    <li>
+                        <label><input type="checkbox" name="plugins" value="advanced-custom-fields"  data-release="latest"  /> Advanced Custom Fields (<a href="https://de.wordpress.org/plugins/advanced-custom-fields/">Plugin page</a>)</label>
+                    </li>
+                    <li>
+                        <label><input type="checkbox" name="plugins" value="query-monitor" data-release="latest"  /> Query Monitor (<a href="https://de.wordpress.org/plugins/query-monitor/">Plugin page</a>)</label>
+                    </li>
+                    <li>
+                        <label><input type="checkbox" name="plugins" value="wp-graphql" data-release="https://github.com/wp-graphql/wp-graphql/archive/master.zip" /> WPGraphQL (<a href="https://github.com/wp-graphql/wp-graphql">GitHub page</a>)</label>
+                    </li>
+                </ul>
+            </div>
+            <button type="submit">Create new project</button>
+        </form>
+        <script>
+            function serializeArray(form) {
+                    var serialized = {};
+                    var plugins = {};
+                    // Loop through each field in the form
+                    for (var i = 0; i < form.elements.length; i++) {
+
+                        var field = form.elements[i];
+
+                        // Don't serialize fields without a name, submits, buttons, file and reset inputs, and disabled fields
+                        if (!field.name || field.disabled || field.type === 'file' || field.type === 'reset' || field.type === 'submit' || field.type === 'button') continue;
+
+
+                        // Convert field data to a query string
+                        else if ((field.type !== 'checkbox' && field.type !== 'radio') || field.checked) {
+                            if(field.name === 'plugins'){
+                                plugins[field.value] = field.dataset.release;
+                                serialized['plugins'] = plugins;
+                            }else{
+                                serialized[field.name] = field.value;
+
+                            }
+                        }
+                    }
+
+                    return serialized;
+            }
+
+
+            (function() {
+                const vscode = acquireVsCodeApi();
+
+                document.getElementById('selectFolder').addEventListener('click', function(evt){
+                    evt.preventDefault();
+                    vscode.postMessage({
+                        command: 'selectFolder'
+                    });
+                });
+
+                document.getElementById('initProjectForm').addEventListener('submit', function(evt){
+                    evt.preventDefault();
+                    vscode.postMessage({
+                        command: 'submitForm',
+                        value: serializeArray(this)
+                    });
+                });
+
+                window.addEventListener('message', event => {
+                    const message = event.data; 
+                    switch (message.command) {
+                        case 'selectedFolder':
+                            document.getElementById('projectPath').value = message.value;
+                            break;
+                    }
+                });
+            }());
+        </script>
+    </body>
+</html>
