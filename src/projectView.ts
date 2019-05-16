@@ -2,7 +2,8 @@ import * as vscode from 'vscode';
 import * as fs from 'fs';
 import * as crypto from 'crypto';
 import * as path from 'path';
-import { WordupInitWebView } from './webview/wordupInit/setup';
+import { WordupInitWebView } from './webview/wordupInit';
+import { wordupCliSetup } from './utils';
 
 const shell = require('shelljs');
 
@@ -242,7 +243,9 @@ export class ProjectNodeProvider implements vscode.TreeDataProvider<ProjectNode>
 				resolve([]);
 			}
 
-			shell.exec('npx wordup list --json --clear', {cwd:this.extensionPath},  (code:number, stdout: string, stderr: string) => {
+			const wordupCli = wordupCliSetup(this.extensionPath, 'list --json --clear');
+
+			shell.exec(wordupCli.cmd, {cwd:wordupCli.dir}, (code:number, stdout: string, stderr: string) => {
 				const wordup_list = JSON.parse(stdout);
 				let plist:ProjectNode[] = [];
 				wordup_list.forEach((element: ProjectRootData) => {
@@ -256,7 +259,6 @@ export class ProjectNodeProvider implements vscode.TreeDataProvider<ProjectNode>
 			
 		});
 	}
-
 
 	private getProjectInfo(element: ProjectRootData):ProjectNode[] {
 		let name = 'Server: http://localhost:'+element.listeningOnPort;

@@ -3,6 +3,7 @@ import * as cp from 'child_process';
 import * as fs from 'fs';
 import * as path from 'path';
 import { WordupProjectView, isRootData } from './projectView';
+import { wordupCliSetup, getOutputChannel } from './utils';
 
 export class WordupCli {
 
@@ -28,7 +29,10 @@ export class WordupCli {
                 fs.readFile(path.join(aPath,'package.json'), async (err, data) => {  
                     if (!err) {
                         const pjson = JSON.parse(data.toString('utf8'));
-                        if(pjson.hasOwnProperty('wordup') && pjson.wordup.hasOwnProperty('wpInstall')){
+
+                        if(!pjson.hasOwnProperty('wordup')){
+                            vscode.window.showErrorMessage('Could not find the wordup settings in package.json');
+                        }else if(pjson.wordup.hasOwnProperty('wpInstall')){
 
                             //Check if other projects are running on this port
                             const port = pjson.wordup.hasOwnProperty('port') ? pjson.wordup.port : '8000';
@@ -37,10 +41,10 @@ export class WordupCli {
                                 vscode.window.showWarningMessage('A different project is running ('+runningProjects.data.name+')');
                             }else{
                                 const addMsg = node ?  node.data.projectName+': '  : '';
-                                this.execWordupCli('wordup install --force', aPath, addMsg+'Successfully installed server');
+                                this.execWordupCli('install --force', aPath, addMsg+'Successfully installed server');
                             }
-                        }else{
-                            this.execVscodeTerminal('npx wordup install', aPath);
+                        }else if(pjson.hasOwnProperty('devDependencies') && pjson.devDependencies.hasOwnProperty('wordup-cli')){
+                            this.execVscodeTerminal('npm install', aPath);
                         }
                     }
                 });   
@@ -66,7 +70,7 @@ export class WordupCli {
                     return;
                 }
 
-                this.execWordupCli('wordup start --force',  nodePath, selectedProject.data.name+': Successfully started server');
+                this.execWordupCli('start --force',  nodePath, selectedProject.data.name+': Successfully started server');
             }
         });
     
@@ -74,7 +78,7 @@ export class WordupCli {
             const nodePath = node ? node.data.path : undefined;
             const addMsg = node ?  node.data.projectName+': '  : '';
 
-            this.execWordupCli('wordup stop', nodePath, addMsg+'Successfully stopped server.');
+            this.execWordupCli('stop', nodePath, addMsg+'Successfully stopped server.');
         });
 
         vscode.commands.registerCommand('wordup.deleteDevServer', (node:any) =>  {
@@ -82,7 +86,7 @@ export class WordupCli {
             const addMsg = node ?  node.data.projectName+': '  : '';
             vscode.window.showWarningMessage('If you delete the server, all data on this server will be deleted. Your project source code will not been affected.',{modal:true}, ...['Delete']).then(selection => {
                 if(selection === 'Delete'){
-                    this.execWordupCli('wordup stop --delete', nodePath, addMsg+'Successfully deleted server.');
+                    this.execWordupCli('stop --delete', nodePath, addMsg+'Successfully deleted server.');
                 }
             });
         });
@@ -94,11 +98,11 @@ export class WordupCli {
         if(!projectPath){
             vscode.window.showInformationMessage('No wordup project found');
         }else{
-            const npxCmd = 'npx '+cmd;
+            const wordupCli = wordupCliSetup(this.extensionPath, cmd);
             
             vscode.window.withProgress({
                 location: vscode.ProgressLocation.Notification,
-                title: "Executing wordup-cli: "+cmd,
+                title: "Executing wordup-cli: "+wordupCli.origCmd,
                 cancellable: true
             }, (progress, token) => {
 
@@ -116,7 +120,7 @@ export class WordupCli {
                     let env = Object.create( process.env );
                     env.WORDUP_PROJECT_PATH = projectPath;
 
-                    let cpCall = cp.exec(npxCmd, {cwd:this.extensionPath, env:env});
+                    let cpCall = cp.exec(wordupCli.cmd, {cwd:wordupCli.dir, env:env});
                     
                     token.onCancellationRequested(() => {
                         cpCall.kill();
@@ -135,7 +139,7 @@ export class WordupCli {
                         if(code !== 0){
                             vscode.window.showWarningMessage('We could not execute this command successfully. You can try it in your terminal. ', ...['Try in terminal']).then(selection => {
                                 if(selection === 'Try in terminal'){
-                                    this.execVscodeTerminal(cmd, projectPath);
+                                    this.execVscodeTerminal('npx '+wordupCli.origCmd, projectPath);
                                 }
                             });
                         }else if(successMsg){
@@ -161,13 +165,4 @@ export class WordupCli {
         this.terminal.show();
     }
 
-}
-
-
-let _channel: vscode.OutputChannel;
-export function getOutputChannel(): vscode.OutputChannel {
-	if (!_channel) {
-		_channel = vscode.window.createOutputChannel('Wordup');
-	}
-	return _channel;
 }

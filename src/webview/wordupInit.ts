@@ -3,7 +3,7 @@ import * as vscode from 'vscode';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as cp from 'child_process';
-import { getOutputChannel } from '../../wordupCli';
+import { wordupCliSetup, getOutputChannel } from '../utils';
 const slugify = require('slugify');
 
 
@@ -97,7 +97,8 @@ export class WordupInitWebView {
 
                 env.WORDUP_INIT_WP_INSTALL = Buffer.from(JSON.stringify(wpInstall)).toString('base64');
 
-                let cpCall = cp.exec('npx wordup init', {cwd:this._extensionPath, env:env});
+			    const wordupCli = wordupCliSetup(this._extensionPath, 'init --no-autoinstall');
+                let cpCall = cp.exec(wordupCli.cmd, {cwd:wordupCli.dir, env:env});
                 
                 token.onCancellationRequested(() => {
                     cpCall.kill();
@@ -116,13 +117,13 @@ export class WordupInitWebView {
                         vscode.window.showErrorMessage("Oops, something didn't work. Please take a look at the output window for more details.");
                     }else {
                         this.panel.dispose();
-                        vscode.window.showInformationMessage('Successfully installed new wordup project',...['Open in new window']).then(selection => {
-                            if(selection === 'Open in new window'){
-                                const projectPath = path.join( fields.path , slugify(fields.name, {lower: true}));
+                        vscode.commands.executeCommand('wordupProjectView.refreshEntry');
+                        vscode.window.showInformationMessage('Successfully init new wordup project. Install your project dev server via Command Palette or Wordup Project Explorer.',...['Open new project']).then(selection => {
+                            const projectPath = path.join( fields.path , slugify(fields.name, {lower: true}));
+                            if(selection === 'Open new project'){
                                 vscode.commands.executeCommand('vscode.openFolder', vscode.Uri.file(projectPath), true);
                             }
                         });
-                        vscode.commands.executeCommand('wordupProjectView.refreshEntry');
                     }
                     resolve();
                 });
@@ -142,7 +143,7 @@ export class WordupInitWebView {
 
     getWebviewContent() {
         const htmlPathOnDisk = vscode.Uri.file(
-			path.join(this._extensionPath, 'src','webview','wordupInit', 'index.html')
+			path.join(this._extensionPath, 'resources','html','wordupInit.html')
 		);
 
         fs.readFile(htmlPathOnDisk.path, 'utf8',(err, contents) => {
