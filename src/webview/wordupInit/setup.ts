@@ -97,7 +97,7 @@ export class WordupInitWebView {
 
                 env.WORDUP_INIT_WP_INSTALL = Buffer.from(JSON.stringify(wpInstall)).toString('base64');
 
-                let cpCall = cp.exec('wordup init', {cwd:this._extensionPath, env:env});
+                let cpCall = cp.exec('npx wordup init', {cwd:this._extensionPath, env:env});
                 
                 token.onCancellationRequested(() => {
                     cpCall.kill();

@@ -29,7 +29,7 @@ interface ProjectNode {
 
 const fastSelectShowItem: vscode.QuickPickItem  = {label:'Show current project in explorer'};
 const fastSelectOpenItem: vscode.QuickPickItem  = {label:'Open current project in browser'};
-const fastSelectTasks: vscode.QuickPickItem  = {label:'Show wordup tasks (install/export)'};
+const fastSelectTasks: vscode.QuickPickItem  = {label:'Show wordup tasks (e.g. export)'};
 const fastSelectStartItem: vscode.QuickPickItem  = {label:'Start new project'};
 
 export function isRootData(object: any): object is ProjectRootData {
