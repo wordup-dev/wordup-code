@@ -3,7 +3,7 @@ import * as vscode from 'vscode';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as cp from 'child_process';
-import { wordupCliSetup, getOutputChannel } from '../utils';
+import { getOutputChannel } from '../utils';
 const slugify = require('slugify');
 
 
@@ -97,8 +97,7 @@ export class WordupInitWebView {
 
                 env.WORDUP_INIT_WP_INSTALL = Buffer.from(JSON.stringify(wpInstall)).toString('base64');
 
-			    const wordupCli = wordupCliSetup(this._extensionPath, 'init --no-autoinstall');
-                let cpCall = cp.exec(wordupCli.cmd, {cwd:wordupCli.dir, env:env});
+                let cpCall = cp.exec('wordup init --no-autoinstall', {cwd:this._extensionPath, env:env});
                 
                 token.onCancellationRequested(() => {
                     cpCall.kill();

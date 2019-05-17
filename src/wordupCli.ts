@@ -3,7 +3,7 @@ import * as cp from 'child_process';
 import * as fs from 'fs';
 import * as path from 'path';
 import { WordupProjectView, isRootData } from './projectView';
-import { wordupCliSetup, getOutputChannel } from './utils';
+import { getOutputChannel } from './utils';
 
 export class WordupCli {
 
@@ -43,8 +43,8 @@ export class WordupCli {
                                 const addMsg = node ?  node.data.projectName+': '  : '';
                                 this.execWordupCli('install --force', aPath, addMsg+'Successfully installed server');
                             }
-                        }else if(pjson.hasOwnProperty('devDependencies') && pjson.devDependencies.hasOwnProperty('wordup-cli')){
-                            this.execVscodeTerminal('npm install', aPath);
+                        }else {
+                            this.execVscodeTerminal('wordup install', aPath);
                         }
                     }
                 });   
@@ -98,11 +98,10 @@ export class WordupCli {
         if(!projectPath){
             vscode.window.showInformationMessage('No wordup project found');
         }else{
-            const wordupCli = wordupCliSetup(this.extensionPath, cmd);
             
             vscode.window.withProgress({
                 location: vscode.ProgressLocation.Notification,
-                title: "Executing wordup-cli: "+wordupCli.origCmd,
+                title: "Executing wordup-cli: wordup "+cmd,
                 cancellable: true
             }, (progress, token) => {
 
@@ -120,7 +119,7 @@ export class WordupCli {
                     let env = Object.create( process.env );
                     env.WORDUP_PROJECT_PATH = projectPath;
 
-                    let cpCall = cp.exec(wordupCli.cmd, {cwd:wordupCli.dir, env:env});
+                    let cpCall = cp.exec('wordup '+cmd, {cwd:this.extensionPath, env:env});
                     
                     token.onCancellationRequested(() => {
                         cpCall.kill();
@@ -139,7 +138,7 @@ export class WordupCli {
                         if(code !== 0){
                             vscode.window.showWarningMessage('We could not execute this command successfully. You can try it in your terminal. ', ...['Try in terminal']).then(selection => {
                                 if(selection === 'Try in terminal'){
-                                    this.execVscodeTerminal('npx '+wordupCli.origCmd, projectPath);
+                                    this.execVscodeTerminal('wordup '+cmd, projectPath);
                                 }
                             });
                         }else if(successMsg){

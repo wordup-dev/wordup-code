@@ -132,7 +132,7 @@ async function getWordupTasks(): Promise<vscode.Task[]> {
 	if (!workspaceRoot) {
 		return emptyTasks;
 	}
-	if (!await isWordupProject(true)) {
+	if (!await isWordupProject()) {
 		return emptyTasks;
     }
 
@@ -143,7 +143,7 @@ async function getWordupTasks(): Promise<vscode.Task[]> {
         task: 'export'
     };
 
-    let exportTask = new vscode.Task(exportKind, 'export', 'wordup', new vscode.ShellExecution('npx wordup export'));
+    let exportTask = new vscode.Task(exportKind, 'export', 'wordup', new vscode.ShellExecution('wordup export'));
     exportTask.group = vscode.TaskGroup.Build;
     result.push(exportTask);
 

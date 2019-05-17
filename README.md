@@ -23,7 +23,7 @@ The Wordup extension makes it easy to develop, manage and export WordPress plugi
 
 ## Requirements
 
-You will need to [install Docker](https://docs.docker.com/install/) on your machine and set up on the system path.
+You will need to install [Docker](https://docs.docker.com/install/) and [wordup-cli](https://www.npmjs.com/package/wordup-cli)  on your machine and set up on the system path.
 
 
 ## For more information 

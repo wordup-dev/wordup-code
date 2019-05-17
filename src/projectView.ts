@@ -1,9 +1,7 @@
 import * as vscode from 'vscode';
-import * as fs from 'fs';
 import * as crypto from 'crypto';
 import * as path from 'path';
 import { WordupInitWebView } from './webview/wordupInit';
-import { wordupCliSetup } from './utils';
 
 const shell = require('shelljs');
 
@@ -192,8 +190,8 @@ export class ProjectNodeProvider implements vscode.TreeDataProvider<ProjectNode>
 				contextValue:'project',
 				resourceUri:wordupUri,
 				iconPath:{
-					light: path.join(__filename, '..', '..', 'resources', 'light', 'project.svg'),
-					dark: path.join(__filename, '..', '..', 'resources', 'dark', 'project.svg')
+					light: path.join(this.extensionPath, 'resources', 'light', 'project.svg'),
+					dark: path.join(this.extensionPath, 'resources', 'dark', 'project.svg')
 				}
 			};
 		}else{
@@ -234,18 +232,18 @@ export class ProjectNodeProvider implements vscode.TreeDataProvider<ProjectNode>
 		return new Promise((resolve, reject) => {
 
 
-			if(!shell.which('docker-compose')){
-				vscode.window.showInformationMessage('We could not find docker-compose on your system', ...['Visit docker.com']).then(selection => {
-					if(selection === 'Visit docker.com'){
-						vscode.env.openExternal(vscode.Uri.parse('https://www.docker.com/get-started'));
+			if(!shell.which('wordup')){
+				vscode.window.showInformationMessage('We could not find the [wordup-cli](https://www.npmjs.com/package/wordup-cli) package on your system', ...['Install']).then(selection => {
+					if(selection === 'Install'){
+						const terminal = vscode.window.createTerminal({name:'Wordup Install'});
+						terminal.sendText('npm install -g wordup-cli');
+        				terminal.show();
 					}
 				});
 				resolve([]);
 			}
 
-			const wordupCli = wordupCliSetup(this.extensionPath, 'list --json --clear');
-
-			shell.exec(wordupCli.cmd, {cwd:wordupCli.dir}, (code:number, stdout: string, stderr: string) => {
+			shell.exec('wordup list --json --clear', {cwd:this.extensionPath}, (code:number, stdout: string, stderr: string) => {
 				const wordup_list = JSON.parse(stdout);
 				let plist:ProjectNode[] = [];
 				wordup_list.forEach((element: ProjectRootData) => {
