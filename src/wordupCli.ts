@@ -41,7 +41,7 @@ export class WordupCli {
                                 vscode.window.showWarningMessage('A different project is running ('+runningProjects.data.name+')');
                             }else{
                                 const addMsg = node ?  node.data.projectName+': '  : '';
-                                this.execWordupCli('install --force', aPath, addMsg+'Successfully installed server');
+                                this.execWordupCli('install --force', aPath, addMsg+'Successfully installed server', '... Can take some minutes');
                             }
                         }else {
                             this.execVscodeTerminal('wordup install', aPath);
@@ -93,7 +93,7 @@ export class WordupCli {
 
     }
 
-    public execWordupCli(cmd:string, path?:string, successMsg?:string){
+    public execWordupCli(cmd:string, path?:string, successMsg?:string, infoMsg?:string){
         const projectPath = path ? path : this.defaultPath;
         if(!projectPath){
             vscode.window.showInformationMessage('No wordup project found');
@@ -111,7 +111,7 @@ export class WordupCli {
                 setTimeout(() => progress.report({ increment: 15 }), 2000);
                 setTimeout(() => progress.report({ increment: 15 }), 4000);
                 setTimeout(() => progress.report({ increment: 10 }), 8000);
-                setTimeout(() => progress.report({ increment: 5, message: " 💤" }), 16000);
+                setTimeout(() => progress.report({ increment: 5, message: (infoMsg ? " "+infoMsg : " 💤") }), 16000);
 
                 return new Promise(resolve => {
                     getOutputChannel().clear();
