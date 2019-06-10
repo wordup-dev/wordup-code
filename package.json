@@ -3,7 +3,7 @@
 	"publisher": "wordup",
 	"displayName": "Wordup - WordPress development toolkit",
 	"description": "Manage your local WordPress development directly in VSCode",
-	"version": "0.1.0",
+	"version": "0.1.1",
 	"enableProposedApi": false,
 	"preview": true,
 	"license": "SEE LICENSE IN LICENSE.md",
@@ -195,8 +195,8 @@
 	},
 	"scripts": {
 		"vscode:prepublish": "webpack --mode production",
-  		"compile": "webpack --mode none",
-  		"watch": "webpack --mode none --watch",
+		"compile": "webpack --mode none",
+		"watch": "webpack --mode none --watch",
 		"postinstall": "node ./node_modules/vscode/bin/install",
 		"test": "npm run compile && node ./node_modules/vscode/bin/test",
 		"test-compile": "tsc -p ./"
