@@ -1,7 +1,7 @@
 {
 	"name": "wordup-code",
 	"publisher": "wordup",
-	"displayName": "Wordup",
+	"displayName": "Wordup - WordPress development toolkit",
 	"description": "Manage your local WordPress development directly in VSCode",
 	"version": "0.1.0",
 	"enableProposedApi": false,
