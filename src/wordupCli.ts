@@ -21,8 +21,13 @@ export class WordupCli {
         this.defaultPath = vscode.workspace.workspaceFolders ? vscode.workspace.workspaceFolders[0].uri.path : '';
         this.extensionPath = context.extensionPath;
 
-        vscode.commands.registerCommand('wordup.installDevServer', async (node:any) =>  {
-            const aPath = node ? node.data.path : this.defaultPath;
+        vscode.commands.registerCommand('wordup.installDevServer', async (node:any, directPath?:string) =>  {
+            let aPath = this.defaultPath;
+            if(directPath){
+                aPath = directPath;
+            }else if(node){
+                aPath = node.data.path;
+            }
 
             if(aPath){
                 //Check if wpInstall is set
@@ -35,13 +40,16 @@ export class WordupCli {
                         }else if(pjson.wordup.hasOwnProperty('wpInstall')){
 
                             //Check if other projects are running on this port
-                            const port = pjson.wordup.hasOwnProperty('port') ? pjson.wordup.port : '8000';
-                            const runningProjects = await projectView.runningProjects(port);
+                            let runningProjects = undefined;
+                            if(pjson.wordup.hasOwnProperty('port')){
+                                runningProjects = await projectView.runningProjects(pjson.wordup.port);
+                            } 
+                            
                             if(runningProjects !== undefined){
                                 vscode.window.showWarningMessage('A different project is running ('+runningProjects.data.name+')');
                             }else{
                                 const addMsg = node ?  node.data.projectName+': '  : '';
-                                this.execWordupCli('install --force', aPath, addMsg+'Successfully installed server', '... Can take some minutes');
+                                this.execWordupCli('install', aPath, addMsg+'Successfully installed server', '⏳ Please be patient ');
                             }
                         }else {
                             this.execVscodeTerminal('wordup install', aPath);
@@ -63,14 +71,7 @@ export class WordupCli {
                     return;
                 }
                 
-                //Check if other projects are running on this port 
-                const runningProjects = await projectView.runningProjects( selectedProject.data.installedOnPort );
-                if(runningProjects !== undefined){
-                    vscode.window.showWarningMessage('A different project is running on port '+selectedProject.data.installedOnPort+' ('+runningProjects.data.name+')');
-                    return;
-                }
-
-                this.execWordupCli('start --force',  nodePath, selectedProject.data.name+': Successfully started server');
+                this.execWordupCli('start',  nodePath, selectedProject.data.name+': Successfully started server');
             }
         });
     

@@ -117,10 +117,12 @@ export class WordupInitWebView {
                     }else {
                         this.panel.dispose();
                         vscode.commands.executeCommand('wordupProjectView.refreshEntry');
-                        vscode.window.showInformationMessage('Successfully init new wordup project. Install your project dev server via Command Palette or Wordup Project Explorer.',...['Open new project']).then(selection => {
+                        vscode.window.showInformationMessage('Successfully init new wordup project.',...['Open in new window', 'Install dev server']).then(selection => {
                             const projectPath = path.join( fields.path , slugify(fields.name, {lower: true}));
-                            if(selection === 'Open new project'){
+                            if(selection === 'Open in new window'){
                                 vscode.commands.executeCommand('vscode.openFolder', vscode.Uri.file(projectPath), true);
+                            }else if(selection === 'Install dev server'){
+                                vscode.commands.executeCommand('wordup.installDevServer', undefined, projectPath);
                             }
                         });
                     }
