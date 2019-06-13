@@ -3,7 +3,7 @@
 	"publisher": "wordup",
 	"displayName": "Wordup - WordPress development toolkit",
 	"description": "Manage your local WordPress development directly in VSCode",
-	"version": "0.1.1",
+	"version": "0.2.0",
 	"enableProposedApi": false,
 	"preview": true,
 	"license": "SEE LICENSE IN LICENSE.md",
