@@ -2,8 +2,12 @@
 
 All notable changes to the "wordup-code" extension will be documented in this file.
 
-## [Unreleased]
+## [0.2.0] - 2019-06-13
 
-## [0.1.0] - 2018-05-16
+- Removed port restrictions, because the wordup-cli now assigns new ports automatically
+    - INFO: There is no update notification, but users should have installed wordup-cli > 0.4.0
+- Added Button to install dev server after init
+
+## [0.1.0] - 2019-05-27
 
 - Initial release
