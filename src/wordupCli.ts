@@ -162,7 +162,7 @@ export class WordupCli {
 
         this.terminal.sendText('cd '+path+' && clear');
         this.terminal.sendText(cmd);
-        this.terminal.show();
+        this.terminal.show(true);
     }
 
 }

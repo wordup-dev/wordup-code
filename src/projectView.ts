@@ -1,9 +1,11 @@
 import * as vscode from 'vscode';
 import * as crypto from 'crypto';
 import * as path from 'path';
+
 import { WordupInitWebView } from './webview/wordupInit';
 
 const shell = require('shelljs');
+const Configstore = require('configstore');
 
 interface ProjectRootData {
 	id: string; 
@@ -30,6 +32,23 @@ const fastSelectShowItem: vscode.QuickPickItem  = {label:'Show current project i
 const fastSelectOpenItem: vscode.QuickPickItem  = {label:'Open current project in browser'};
 const fastSelectTasks: vscode.QuickPickItem  = {label:'Show wordup tasks (e.g. export)'};
 const fastSelectStartItem: vscode.QuickPickItem  = {label:'Start new project'};
+
+
+async function checkPackageUpdate(){
+	
+	const notifierConfig = new Configstore('update-notifier-wordup-cli');
+	if(notifierConfig.size > 0){
+		if(notifierConfig.has('update')){
+			vscode.window.showInformationMessage('There is an update ('+notifierConfig.get('update.latest')+') available for [wordup-cli](https://www.npmjs.com/package/wordup-cli)', ...['Install']).then(selection => {
+				if(selection === 'Install'){
+					const terminal = vscode.window.createTerminal();
+					terminal.sendText('npm install -g wordup-cli', false);
+					terminal.show(true);
+				}
+			});
+		}
+	}
+}
 
 export function isRootData(object: any): object is ProjectRootData {
     return 'slugName' in object;
@@ -235,12 +254,14 @@ export class ProjectNodeProvider implements vscode.TreeDataProvider<ProjectNode>
 			if(!shell.which('wordup')){
 				vscode.window.showInformationMessage('We could not find the [wordup-cli](https://www.npmjs.com/package/wordup-cli) package on your system', ...['Install']).then(selection => {
 					if(selection === 'Install'){
-						const terminal = vscode.window.createTerminal({name:'Wordup Install'});
-						terminal.sendText('npm install -g wordup-cli');
-        				terminal.show();
+						const terminal = vscode.window.createTerminal();
+						terminal.sendText('npm install -g wordup-cli',false);
+        				terminal.show(true);
 					}
 				});
 				resolve([]);
+			}else{
+				checkPackageUpdate();
 			}
 
 			shell.exec('wordup list --json --clear', {cwd:this.extensionPath}, (code:number, stdout: string, stderr: string) => {
