@@ -2,6 +2,9 @@ import * as vscode from 'vscode';
 import * as cp from 'child_process';
 import * as fs from 'fs';
 import * as path from 'path';
+
+const YAML = require('yaml');
+
 import { WordupProjectView, isRootData } from './projectView';
 import { getOutputChannel } from './utils';
 
@@ -30,19 +33,18 @@ export class WordupCli {
             }
 
             if(aPath){
-                //Check if wpInstall is set
-                fs.readFile(path.join(aPath,'package.json'), async (err, data) => {  
-                    if (!err) {
-                        const pjson = JSON.parse(data.toString('utf8'));
 
-                        if(!pjson.hasOwnProperty('wordup')){
-                            vscode.window.showErrorMessage('Could not find the wordup settings in package.json');
-                        }else if(pjson.wordup.hasOwnProperty('wpInstall')){
+                //Check if wpInstall is set
+                fs.readFile(path.join(aPath,'.wordup', 'config.yml'), async (err, data) => {  
+                    if (!err) {
+                        const pjson = YAML.parse(data.toString('utf8'));
+
+                        if(pjson.hasOwnProperty('wpInstall')){
 
                             //Check if other projects are running on this port
                             let runningProjects = undefined;
-                            if(pjson.wordup.hasOwnProperty('port')){
-                                runningProjects = await projectView.runningProjects(pjson.wordup.port);
+                            if(pjson.hasOwnProperty('port')){
+                                runningProjects = await projectView.runningProjects(pjson.port);
                             } 
                             
                             if(runningProjects !== undefined){
@@ -54,6 +56,8 @@ export class WordupCli {
                         }else {
                             this.execVscodeTerminal('wordup install', aPath);
                         }
+                    }else{
+                        this.execVscodeTerminal('wordup install', aPath);
                     }
                 });   
             }

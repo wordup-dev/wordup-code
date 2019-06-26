@@ -36,7 +36,7 @@ export function activate(context: vscode.ExtensionContext) {
     // Update status bar item based on events for multi root folder changes
     if (vscode.workspace.workspaceFolders) {
         let wordupTaskPromise: Thenable<vscode.Task[]> | undefined = undefined;
-        let pattern = path.join(vscode.workspace.workspaceFolders[0].uri.path, 'package.json');
+        let pattern = path.join(vscode.workspace.workspaceFolders[0].uri.path,'.wordup', 'config.yml');
 	    let fileWatcher = vscode.workspace.createFileSystemWatcher(pattern);
         fileWatcher.onDidChange(() => {
             updateStatusBarItem(wordupStatusBarItem);
@@ -96,33 +96,12 @@ async function isWordupProject(checkLocal?:boolean): Promise<boolean> {
         return Promise.resolve(false);
     }
 
-    const resource = await vscode.workspace.findFiles('package.json');
+    const resource = await vscode.workspace.findFiles('.wordup/config.yml');
 
     // If we have a file:// resource we resolve the WorkspaceFolder this file is from and update
     // the status accordingly.
     return new Promise((resolve, reject) => {
-        if (resource.length > 0 ) {
-            fs.readFile(resource[0].fsPath, (err, data) => {  
-                if (err) {
-                    resolve(false);
-                }
-
-                const pjson = JSON.parse(data.toString('utf8'));
-                if(pjson.hasOwnProperty('wordup')){
-                    if(checkLocal){
-                        //Check if wordup project has has local devDependency to wordup-cli
-                        if(pjson.hasOwnProperty('devDependencies') && pjson.devDependencies.hasOwnProperty('wordup-cli')){
-                            resolve(true);
-                        }
-                        resolve(false);
-                    }else{
-                        resolve(true);
-                    }
-                }else{
-                    resolve(false);
-                }
-            });
-        }
+        resolve(resource.length > 0);
     });
 }
 

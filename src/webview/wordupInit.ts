@@ -118,7 +118,7 @@ export class WordupInitWebView {
                         this.panel.dispose();
                         vscode.commands.executeCommand('wordupProjectView.refreshEntry');
                         vscode.window.showInformationMessage('Successfully init new wordup project.',...['Open in new window', 'Install dev server']).then(selection => {
-                            const projectPath = path.join( fields.path , slugify(fields.name, {lower: true}));
+                            const projectPath = path.join( fields.path , slugify(fields.name, {lower: true, remove: /[*+~%\<>/;.(){}?,'"!:@#^|]/g}));
                             if(selection === 'Open in new window'){
                                 vscode.commands.executeCommand('vscode.openFolder', vscode.Uri.file(projectPath), true);
                             }else if(selection === 'Install dev server'){

@@ -264,7 +264,7 @@ export class ProjectNodeProvider implements vscode.TreeDataProvider<ProjectNode>
 				checkPackageUpdate();
 			}
 
-			shell.exec('wordup list --json --clear', {cwd:this.extensionPath}, (code:number, stdout: string, stderr: string) => {
+			shell.exec('wordup list --json', {cwd:this.extensionPath}, (code:number, stdout: string, stderr: string) => {
 				const wordup_list = JSON.parse(stdout);
 				let plist:ProjectNode[] = [];
 				wordup_list.forEach((element: ProjectRootData) => {
