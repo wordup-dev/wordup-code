@@ -2,6 +2,12 @@
 
 All notable changes to the "wordup-code" extension will be documented in this file.
 
+## [0.3.0] - 2019-06-27
+
+- Support for new wordup config system
+    -  wordup-cli >= 0.5.0 should be used
+- wordup-cli update notification in vscode
+
 ## [0.2.0] - 2019-06-13
 
 - Removed port restrictions, because the wordup-cli now assigns new ports automatically
