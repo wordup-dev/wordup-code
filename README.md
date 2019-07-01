@@ -2,7 +2,6 @@
 
 The Wordup extension makes it easy to develop, manage and export WordPress plugins or themes from Visual Studio Code.
 
-
 ## Key Features
 
 * Manage all your local WordPress projects directly in VSCode 
@@ -18,20 +17,17 @@ The Wordup extension makes it easy to develop, manage and export WordPress plugi
 
 ![Create new WordPress plugin](resources/create-demo.gif)
 
-> Tip: You can manage your WordPress installation settings always in your package.json of your project. 
-
+> Tip: You can manage your WordPress installation settings always in your package.json of your project.
 
 ## Requirements
 
 You will need to install [Docker](https://docs.docker.com/install/) and [wordup-cli](https://www.npmjs.com/package/wordup-cli)  on your machine and set up on the system path.
 
+## For more information
 
-## For more information 
-
-* [Official website](https://wordup.dev): The official wordup website 
+* [Official website](https://wordup.dev): The official wordup website
+* [Documentation](https://docs.wordup.dev): The wordup documentation
 * [wordup-cli](https://github.com/wordup-dev/wordup-cli): The wordup CLI
-* [Wordup on Github](https://github.com/wordup-dev/)
-
 
 ## Release Notes
 
