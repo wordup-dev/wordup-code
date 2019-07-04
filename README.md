@@ -17,7 +17,7 @@ The Wordup extension makes it easy to develop, manage and export WordPress plugi
 
 ![Create new WordPress plugin](resources/create-demo.gif)
 
-> Tip: You can manage your WordPress installation settings always in your package.json of your project.
+> Tip: You can manage your WordPress installation settings always in the .wordup/config.yml of your project.
 
 ## Requirements
 
