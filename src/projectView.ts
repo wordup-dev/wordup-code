@@ -3,6 +3,7 @@ import * as crypto from 'crypto';
 import * as path from 'path';
 
 import { WordupInitWebView } from './webview/wordupInit';
+import { wordupConformPath } from './utils';
 
 const shell = require('shelljs');
 const Configstore = require('configstore');
@@ -133,13 +134,7 @@ export class WordupProjectView {
 
 	public async findProjectByPath(aPath:string):Promise<ProjectNode | undefined>  {
 
-		// Correct nodejs conform filepath 
-		if(process.platform === "win32"){
-			const root = path.parse(aPath).root;
-			aPath = path.resolve("/", aPath.replace(root, ""));
-		}
-
-		const id = crypto.createHash('sha1').update(aPath).digest('hex');
+		const id = crypto.createHash('sha1').update(wordupConformPath(aPath)).digest('hex');
 		let allProjects = this.projects.cachedProjects;
 
 		if(allProjects.length === 0){

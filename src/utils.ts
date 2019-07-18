@@ -9,3 +9,11 @@ export function getOutputChannel(): vscode.OutputChannel {
 	}
 	return _channel;
 }
+
+export function wordupConformPath(aPath:string): string {
+	if(process.platform === "win32"){
+		const root = path.parse(aPath).root;
+		return path.resolve("/", aPath.replace(root, ""));
+	}
+	return aPath;
+}

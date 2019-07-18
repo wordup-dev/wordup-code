@@ -6,7 +6,7 @@ import * as path from 'path';
 const YAML = require('yaml');
 
 import { WordupProjectView, isRootData } from './projectView';
-import { getOutputChannel } from './utils';
+import { getOutputChannel,wordupConformPath } from './utils';
 
 export class WordupCli {
 
@@ -21,7 +21,7 @@ export class WordupCli {
 
         this.terminal = vscode.window.createTerminal({name:'Wordup'});
 
-        this.defaultPath = vscode.workspace.workspaceFolders ? vscode.workspace.workspaceFolders[0].uri.fsPath : '';
+        this.defaultPath = vscode.workspace.workspaceFolders ? wordupConformPath(vscode.workspace.workspaceFolders[0].uri.fsPath) : '';
         this.extensionPath = context.extensionPath;
 
         vscode.commands.registerCommand('wordup.installDevServer', async (node:any, directPath?:string) =>  {

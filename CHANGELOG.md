@@ -2,6 +2,12 @@
 
 All notable changes to the "wordup-code" extension will be documented in this file.
 
+
+## [0.3.1] - 2019-07-19
+
+- Bugfix: Wrong Windows filepath output
+- Add installation as type for an new project
+
 ## [0.3.0] - 2019-06-27
 
 - Support for new wordup config system
