@@ -164,7 +164,7 @@ export class WordupCli {
 
     public execVscodeTerminal(cmd:string, path:string){
 
-        this.terminal.sendText('cd '+path+' && clear');
+        this.terminal.sendText('cd '+path);
         this.terminal.sendText(cmd);
         this.terminal.show(true);
     }
