@@ -143,11 +143,9 @@ export class WordupInitWebView {
     }
 
     getWebviewContent() {
-        const htmlPathOnDisk = vscode.Uri.file(
-			path.join(this._extensionPath, 'resources','html','wordupInit.html')
-		);
+        const htmlPathOnDisk = path.join(this._extensionPath, 'resources','html','wordupInit.html');
 
-        fs.readFile(htmlPathOnDisk.path, 'utf8',(err, contents) => {
+        fs.readFile(htmlPathOnDisk, 'utf8',(err, contents) => {
             this.panel.webview.html = contents;
         });
     }

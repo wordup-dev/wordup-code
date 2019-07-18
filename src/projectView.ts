@@ -81,7 +81,7 @@ export class WordupProjectView {
 
 			if(selected === fastSelectShowItem || selected === fastSelectOpenItem){
 
-				const defaultPath = vscode.workspace.workspaceFolders ? vscode.workspace.workspaceFolders[0].uri.path : '';
+				const defaultPath = vscode.workspace.workspaceFolders ? vscode.workspace.workspaceFolders[0].uri.fsPath : '';
 				if(defaultPath){
 					const element = await this.findProjectByPath(defaultPath);
 					
@@ -132,6 +132,13 @@ export class WordupProjectView {
 
 
 	public async findProjectByPath(aPath:string):Promise<ProjectNode | undefined>  {
+
+		// Correct nodejs conform filepath 
+		if(process.platform === "win32"){
+			const root = path.parse(aPath).root;
+			aPath = path.resolve("/", aPath.replace(root, ""));
+		}
+
 		const id = crypto.createHash('sha1').update(aPath).digest('hex');
 		let allProjects = this.projects.cachedProjects;
 

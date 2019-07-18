@@ -21,7 +21,7 @@ export class WordupCli {
 
         this.terminal = vscode.window.createTerminal({name:'Wordup'});
 
-        this.defaultPath = vscode.workspace.workspaceFolders ? vscode.workspace.workspaceFolders[0].uri.path : '';
+        this.defaultPath = vscode.workspace.workspaceFolders ? vscode.workspace.workspaceFolders[0].uri.fsPath : '';
         this.extensionPath = context.extensionPath;
 
         vscode.commands.registerCommand('wordup.installDevServer', async (node:any, directPath?:string) =>  {
