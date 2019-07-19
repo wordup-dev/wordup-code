@@ -6,6 +6,7 @@ import * as cp from 'child_process';
 import { getOutputChannel } from '../utils';
 const slugify = require('slugify');
 
+import { wordupConformPath } from '../utils';
 
 interface ProjectInitFields {
 	name: string; 
@@ -80,7 +81,7 @@ export class WordupInitWebView {
 			    getOutputChannel().show(true);
 
                 let env = Object.create( process.env );
-                env.WORDUP_INIT_PATH = fields.path;
+                env.WORDUP_INIT_PATH = wordupConformPath(fields.path);
                 env.WORDUP_INIT_NAME = fields.name;
                 env.WORDUP_INIT_TYPE = fields.type;
 
