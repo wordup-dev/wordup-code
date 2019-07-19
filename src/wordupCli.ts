@@ -10,7 +10,7 @@ import { getOutputChannel,wordupConformPath } from './utils';
 
 export class WordupCli {
 
-    public terminal:  vscode.Terminal;
+    public terminal:  vscode.Terminal | null;
     public projectView: WordupProjectView;
     readonly defaultPath: string;
     readonly extensionPath: string;
@@ -19,7 +19,7 @@ export class WordupCli {
 
         this.projectView = projectView;
 
-        this.terminal = vscode.window.createTerminal({name:'Wordup'});
+        this.terminal = null;
 
         this.defaultPath = vscode.workspace.workspaceFolders ? wordupConformPath(vscode.workspace.workspaceFolders[0].uri.fsPath) : '';
         this.extensionPath = context.extensionPath;
@@ -163,10 +163,13 @@ export class WordupCli {
 
 
     public execVscodeTerminal(cmd:string, path:string){
+        if(this.terminal){
+            this.terminal.dispose();
+        }
 
-        this.terminal.sendText('cd '+path);
+        this.terminal = vscode.window.createTerminal({name:'Wordup', cwd:path});
         this.terminal.sendText(cmd);
-        this.terminal.show(true);
+        this.terminal.show();
     }
 
 }

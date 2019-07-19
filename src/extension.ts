@@ -122,8 +122,9 @@ async function getWordupTasks(): Promise<vscode.Task[]> {
         task: 'export'
     };
 
-    let exportTask = new vscode.Task(exportKind, 'export', 'wordup', new vscode.ShellExecution('wordup export'));
+    let exportTask = new vscode.Task(exportKind, vscode.TaskScope.Workspace, 'export', 'wordup', new vscode.ShellExecution('wordup export'));
     exportTask.group = vscode.TaskGroup.Build;
+    exportTask.isBackground = false;
     result.push(exportTask);
 
     /*let installKind: WordupTaskDefinition = {
