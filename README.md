@@ -25,8 +25,6 @@ You will need to install [Docker](https://docs.docker.com/install/) and [wordup-
 
 ## For more information
 
-* [Official website](https://wordup.dev): The official wordup website
-* [Documentation](https://docs.wordup.dev): The wordup documentation
 * [wordup-cli](https://github.com/wordup-dev/wordup-cli): The wordup CLI
 
 ## Release Notes
